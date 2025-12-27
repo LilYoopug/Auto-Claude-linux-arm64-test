@@ -163,9 +163,44 @@ jobs:
         run: cd apps/frontend && npm run build
 
       - name: Package Linux (ARM64)
-        run: cd apps/frontend && npm run package:linux -- --arm64
+        run: |
+          cd apps/frontend
+          # Install system fpm to avoid architecture mismatch (x86_64 vs ARM64)
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev build-essential
+          sudo gem install fpm
+
+          # Rebuild native modules for ARM64 architecture
+          # Using electron version matching package.json (39.2.7)
+          npx electron-rebuild --arch=arm64 --force
+
+          # Verify node-pty binary was built correctly for ARM64
+          echo "Checking node-pty binary architecture..."
+          PTY_PATH=$(find node_modules -name "pty.node" -type f 2>/dev/null | head -1)
+          if [ -n "$PTY_PATH" ]; then
+            echo "Found pty.node at: $PTY_PATH"
+            file "$PTY_PATH"
+            # Verify it's ARM64, not x86_64
+            if file "$PTY_PATH" | grep -q "ARM\|aarch64"; then
+              echo "✓ node-pty is correctly built for ARM64"
+            else
+              echo "✗ ERROR: node-pty is NOT built for ARM64!"
+              file "$PTY_PATH"
+              exit 1
+            fi
+          else
+            echo "✗ ERROR: node-pty binary not found!"
+            find node_modules -type f -name "*.node" 2>/dev/null || echo "No .node files found"
+            exit 1
+          fi
+
+          # Package with ARM64 target, using system fpm to avoid binary architecture issues
+          npm run package:linux -- --arm64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm_config_arch: arm64
+          npm_config_target_arch: arm64
+          USE_SYSTEM_FPM: "true"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
