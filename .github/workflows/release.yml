@@ -99,6 +99,14 @@ jobs:
       - name: Install dependencies
         run: cd apps/frontend && npm ci
 
+      - name: Setup Flatpak
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y --user flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
+          flatpak install -y --user flathub org.electronjs.Electron2.BaseApp//24.08
+
       - name: Cache bundled Python
         uses: actions/cache@v4
         with:
@@ -150,6 +158,14 @@ jobs:
 
       - name: Install dependencies
         run: cd apps/frontend && npm ci
+
+      - name: Setup Flatpak
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y --user flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
+          flatpak install -y --user flathub org.electronjs.Electron2.BaseApp//24.08
 
       - name: Cache bundled Python
         uses: actions/cache@v4
