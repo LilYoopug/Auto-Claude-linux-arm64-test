@@ -167,17 +167,14 @@ jobs:
           cd apps/frontend
           # Install system fpm to avoid architecture mismatch (x86_64 vs ARM64)
           sudo apt-get update
-          sudo apt-get install -y ruby ruby-dev build-essential
+          sudo apt-get install -y ruby ruby-dev build-essential flatpak flatpak-builder
           sudo gem install fpm
 
-          # Package with ARM64 target, excluding Flatpak (not available on ARM64 runners)
-          # Only build AppImage and deb for ARM64
-          npx electron-builder --linux --arm64 --config.npmRebuild=false --config.linux.target='["AppImage","deb"]'
+          # Package with ARM64 target, using all default targets (AppImage, deb, flatpak)
+          npx electron-builder --linux --arm64 --config.npmRebuild=false
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_arch: arm64
-          npm_config_target_arch: arm64
-          USE_SYSTEM_FPM: "true"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
