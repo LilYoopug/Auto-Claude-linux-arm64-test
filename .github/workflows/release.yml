@@ -176,7 +176,10 @@ jobs:
 
           # Verify node-pty binary was built correctly for ARM64
           echo "Checking node-pty binary architecture..."
-          PTY_PATH=$(find node_modules -name "pty.node" -type f 2>/dev/null | head -1)
+          # Search in both local and root node_modules (due to npm workspace hoisting)
+          # Also look for the @lydell specific package structure
+          PTY_PATH=$(find . ../../node_modules -name "pty.node" -type f 2>/dev/null | head -1)
+
           if [ -n "$PTY_PATH" ]; then
             echo "Found pty.node at: $PTY_PATH"
             file "$PTY_PATH"
@@ -190,7 +193,8 @@ jobs:
             fi
           else
             echo "✗ ERROR: node-pty binary not found!"
-            find node_modules -type f -name "*.node" 2>/dev/null || echo "No .node files found"
+            echo "Searching all .node files in the workspace..."
+            find . ../../node_modules -type f -name "*.node" 2>/dev/null || echo "No .node files found at all"
             exit 1
           fi
 
