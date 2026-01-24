@@ -17,112 +17,112 @@ jobs:
   # build-macos-intel: (removed)
   # build-macos-arm64: (removed)
 
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Get npm cache directory
-        id: npm-cache
-        shell: bash
-        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm-
-
-      - name: Install dependencies
-        run: cd apps/frontend && npm ci
-
-      - name: Cache bundled Python
-        uses: actions/cache@v4
-        with:
-          path: apps/frontend/python-runtime
-          key: python-bundle-${{ runner.os }}-x64-3.12.8
-          restore-keys: |
-            python-bundle-${{ runner.os }}-x64-
-
-      - name: Build application
-        run: cd apps/frontend && npm run build
-
-      - name: Package Windows
-        run: cd apps/frontend && npm run package:win
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ secrets.WIN_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.WIN_CERTIFICATE_PASSWORD }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-builds
-          path: |
-            apps/frontend/dist/*.exe
-
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Get npm cache directory
-        id: npm-cache
-        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm-
-
-      - name: Install dependencies
-        run: cd apps/frontend && npm ci
-
-      - name: Cache bundled Python
-        uses: actions/cache@v4
-        with:
-          path: apps/frontend/python-runtime
-          key: python-bundle-${{ runner.os }}-x64-3.12.8
-          restore-keys: |
-            python-bundle-${{ runner.os }}-x64-
-
-      - name: Build application
-        run: cd apps/frontend && npm run build
-
-      - name: Package Linux
-        run: cd apps/frontend && npm run package:linux
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-builds
-          path: |
-            apps/frontend/dist/*.AppImage
-            apps/frontend/dist/*.deb
-
+  # build-windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.11'
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '24'
+  #
+  #     - name: Get npm cache directory
+  #       id: npm-cache
+  #       shell: bash
+  #       run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+  #
+  #     - uses: actions/cache@v4
+  #       with:
+  #         path: ${{ steps.npm-cache.outputs.dir }}
+  #         key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: ${{ runner.os }}-npm-
+  #
+  #     - name: Install dependencies
+  #       run: cd apps/frontend && npm ci
+  #
+  #     - name: Cache bundled Python
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: apps/frontend/python-runtime
+  #         key: python-bundle-${{ runner.os }}-x64-3.12.8
+  #         restore-keys: |
+  #           python-bundle-${{ runner.os }}-x64-
+  #
+  #     - name: Build application
+  #       run: cd apps/frontend && npm run build
+  #
+  #     - name: Package Windows
+  #       run: cd apps/frontend && npm run package:win
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         CSC_LINK: ${{ secrets.WIN_CERTIFICATE }}
+  #         CSC_KEY_PASSWORD: ${{ secrets.WIN_CERTIFICATE_PASSWORD }}
+  #
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: windows-builds
+  #         path: |
+  #           apps/frontend/dist/*.exe
+  #
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.11'
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '24'
+  #
+  #     - name: Get npm cache directory
+  #       id: npm-cache
+  #       run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+  #
+  #     - uses: actions/cache@v4
+  #       with:
+  #         path: ${{ steps.npm-cache.outputs.dir }}
+  #         key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: ${{ runner.os }}-npm-
+  #
+  #     - name: Install dependencies
+  #       run: cd apps/frontend && npm ci
+  #
+  #     - name: Cache bundled Python
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: apps/frontend/python-runtime
+  #         key: python-bundle-${{ runner.os }}-x64-3.12.8
+  #         restore-keys: |
+  #           python-bundle-${{ runner.os }}-x64-
+  #
+  #     - name: Build application
+  #       run: cd apps/frontend && npm run build
+  #
+  #     - name: Package Linux
+  #       run: cd apps/frontend && npm run package:linux
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: linux-builds
+  #         path: |
+  #           apps/frontend/dist/*.AppImage
+  #           apps/frontend/dist/*.deb
+  #
   build-linux-arm64:
     runs-on: ubuntu-24.04-arm
     steps:
@@ -185,7 +185,7 @@ jobs:
             apps/frontend/dist/*.deb
 
   create-release:
-    needs: [build-windows, build-linux, build-linux-arm64]
+    needs: [build-linux-arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
