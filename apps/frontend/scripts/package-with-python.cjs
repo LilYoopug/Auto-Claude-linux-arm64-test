@@ -196,7 +196,7 @@ function stageRuntimePackages(frontendDir, platform, arch) {
     'minimatch',
   ];
   const outMainDir = path.join(frontendDir, 'out', 'main');
-  const outModulesDir = path.join(outMainDir, 'node_modules');
+  const outModulesDir = path.join(outMainDir, '_node_modules');
 
   if (!fs.existsSync(outMainDir)) {
     throw new Error('Missing build output. Run electron-vite build before staging node-pty.');

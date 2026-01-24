@@ -157,7 +157,7 @@
       "out/**/*",
       "package.json",
       {
-        "from": "out/main/node_modules",
+        "from": "out/main/_node_modules",
         "to": "out/main/node_modules",
         "filter": [
           "**/*"
