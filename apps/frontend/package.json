@@ -155,11 +155,17 @@
     },
     "files": [
       "out/**/*",
-      "out/main/node_modules/**/*",
-      "package.json"
+      "package.json",
+      {
+        "from": "out/main/node_modules",
+        "to": "out/main/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
     "asarUnpack": [
-      "out/main/node_modules/@lydell/node-pty-*/**"
+      "out/main/node_modules/@lydell/node-pty*/**"
     ],
     "extraResources": [
       {
