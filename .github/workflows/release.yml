@@ -170,8 +170,9 @@ jobs:
           sudo apt-get install -y ruby ruby-dev build-essential
           sudo gem install fpm
 
-          # Package with ARM64 target, using system fpm to avoid binary architecture issues
-          npm run package:linux -- --arm64
+          # Package with ARM64 target, excluding Flatpak (not available on ARM64 runners)
+          # Only build AppImage and deb for ARM64
+          npx electron-builder --linux --arm64 --config.npmRebuild=false --config.linux.target=AppImage,deb
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_arch: arm64
