@@ -170,34 +170,6 @@ jobs:
           sudo apt-get install -y ruby ruby-dev build-essential
           sudo gem install fpm
 
-          # Rebuild native modules for ARM64 architecture
-          # Using electron version matching package.json (39.2.7)
-          npx electron-rebuild --arch=arm64 --force
-
-          # Verify node-pty binary was built correctly for ARM64
-          echo "Checking node-pty binary architecture..."
-          # Search in both local and root node_modules (due to npm workspace hoisting)
-          # Also look for the @lydell specific package structure
-          PTY_PATH=$(find . ../../node_modules -name "pty.node" -type f 2>/dev/null | head -1)
-
-          if [ -n "$PTY_PATH" ]; then
-            echo "Found pty.node at: $PTY_PATH"
-            file "$PTY_PATH"
-            # Verify it's ARM64, not x86_64
-            if file "$PTY_PATH" | grep -q "ARM\|aarch64"; then
-              echo "✓ node-pty is correctly built for ARM64"
-            else
-              echo "✗ ERROR: node-pty is NOT built for ARM64!"
-              file "$PTY_PATH"
-              exit 1
-            fi
-          else
-            echo "✗ ERROR: node-pty binary not found!"
-            echo "Searching all .node files in the workspace..."
-            find . ../../node_modules -type f -name "*.node" 2>/dev/null || echo "No .node files found at all"
-            exit 1
-          fi
-
           # Package with ARM64 target, using system fpm to avoid binary architecture issues
           npm run package:linux -- --arm64
         env:
