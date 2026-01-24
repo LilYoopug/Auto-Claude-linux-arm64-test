@@ -165,7 +165,7 @@
       }
     ],
     "asarUnpack": [
-      "out/main/node_modules/@lydell/node-pty*/**"
+      "out/main/node_modules/@lydell/node-pty-*/**"
     ],
     "extraResources": [
       {
