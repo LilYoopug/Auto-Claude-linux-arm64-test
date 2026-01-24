@@ -155,6 +155,7 @@
     },
     "files": [
       "out/**/*",
+      "out/main/node_modules/**/*",
       "package.json"
     ],
     "asarUnpack": [
@@ -215,8 +216,7 @@
       "icon": "resources/icons",
       "target": [
         "AppImage",
-        "deb",
-        "flatpak"
+        "deb"
       ],
       "category": "Development"
     },
