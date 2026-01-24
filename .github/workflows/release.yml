@@ -176,6 +176,45 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           npm_config_arch: arm64
 
+      - name: Verify node-pty in build
+        run: |
+          cd apps/frontend
+
+          # Path to unpacked app
+          APP_DIR="dist/linux-arm64-unpacked/resources"
+          ASAR_PATH="$APP_DIR/app.asar"
+
+          echo "Verifying build artifacts in $APP_DIR..."
+
+          if [ ! -f "$ASAR_PATH" ]; then
+            echo "::error::app.asar not found at $ASAR_PATH"
+            ls -R dist/
+            exit 1
+          fi
+
+          # 1. Check if main package is in ASAR (fixes ERR_MODULE_NOT_FOUND)
+          echo "Checking for @lydell/node-pty in app.asar..."
+          if npx @electron/asar list "$ASAR_PATH" | grep -q "out/main/node_modules/@lydell/node-pty/package.json"; then
+            echo "✅ Found @lydell/node-pty package in ASAR"
+          else
+            echo "::error::❌ @lydell/node-pty package.json NOT found in app.asar!"
+            echo "Dumping partial ASAR content for debugging:"
+            npx @electron/asar list "$ASAR_PATH" | grep "node_modules" | head -n 20
+            exit 1
+          fi
+
+          # 2. Check if platform binary is unpacked
+          BINARY_PKG_PATH="$APP_DIR/app.asar.unpacked/out/main/node_modules/@lydell/node-pty-linux-arm64"
+          echo "Checking for unpacked binary package at $BINARY_PKG_PATH..."
+          if [ -d "$BINARY_PKG_PATH" ]; then
+            echo "✅ Found unpacked binary package: node-pty-linux-arm64"
+          else
+            echo "::error::❌ Unpacked binary package NOT found!"
+            echo "Contents of app.asar.unpacked:"
+            ls -R "$APP_DIR/app.asar.unpacked" || echo "Directory not found"
+            exit 1
+          fi
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
