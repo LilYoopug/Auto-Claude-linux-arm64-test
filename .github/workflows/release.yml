@@ -332,14 +332,14 @@ jobs:
   #           apps/frontend/dist/*.blockmap
 
   build-linux-arm64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
+      #   with:
+      #     platforms: arm64
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -349,8 +349,8 @@ jobs:
       - name: Setup Node.js and install dependencies
         uses: ./.github/actions/setup-node-frontend
 
-      - name: Install ARM64 node-pty (required for cross-packaging)
-        run: cd apps/frontend && npm install --no-save --force @lydell/node-pty-linux-arm64
+      # - name: Install ARM64 node-pty (required for cross-packaging)
+      #   run: cd apps/frontend && npm install --no-save --force @lydell/node-pty-linux-arm64
 
       # - name: Setup Flatpak
       #   run: |
@@ -384,6 +384,7 @@ jobs:
           SENTRY_PROFILES_SAMPLE_RATE: ${{ secrets.SENTRY_PROFILES_SAMPLE_RATE }}
 
       - name: Package Linux (ARM64)
+        # Note: --arm64 flag is still good practice to be explicit, but running on native arm runner
         run: cd apps/frontend && npm run package:linux -- --arm64 -c.linux.target=deb
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
