@@ -350,7 +350,7 @@ jobs:
         uses: ./.github/actions/setup-node-frontend
 
       - name: Install ARM64 node-pty (required for cross-packaging)
-        run: cd apps/frontend && npm install --no-save @lydell/node-pty-linux-arm64
+        run: cd apps/frontend && npm install --no-save --force @lydell/node-pty-linux-arm64
 
       # - name: Setup Flatpak
       #   run: |
